@@ -1,6 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
 
-# Example dataset
+# here is an Example dataset
 X = [[1, 2], [2, 3], [3, 3], [6, 5], [7, 8]]
 y = [0, 0, 0, 1, 1]
 
