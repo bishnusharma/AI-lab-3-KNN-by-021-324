@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="644402e1-00e0-4306-8b8c-ff1a74925d36" name="Changes" comment="new commit">
-      <change afterPath="$PROJECT_DIR$/Classification_dataset.csv" afterDir="false" />
+    <list default="true" id="644402e1-00e0-4306-8b8c-ff1a74925d36" name="Changes" comment="new commit 2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/knn_2_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/knn_2_features.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/knn_multiple_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/knn_multiple_features.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +90,7 @@
       <updated>1750002088458</updated>
       <workItem from="1750002089783" duration="1910000" />
       <workItem from="1750038556352" duration="120000" />
-      <workItem from="1750054200348" duration="3313000" />
+      <workItem from="1750054200348" duration="4382000" />
     </task>
     <task id="LOCAL-00001" summary="new commit">
       <option name="closed" value="true" />
@@ -102,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750003759698</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="new commit 2">
+      <option name="closed" value="true" />
+      <created>1750057655571</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1750057655571</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,7 +116,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="new commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="new commit" />
+    <MESSAGE value="new commit 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="new commit 2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

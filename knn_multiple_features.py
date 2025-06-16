@@ -15,7 +15,6 @@ def load_data(filename):
             'features': [age, tumor_size, lymph_nodes, cell_uniformity],
             'diagnosis': diagnosis
         })
-
     return data
 
 
