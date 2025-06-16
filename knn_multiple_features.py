@@ -1,32 +1,117 @@
-from sklearn.neighbors import KNeighborsClassifier
-import pandas as pd
+import math
+from collections import Counter
+from openpyxl import load_workbook
 
-# Sample dataset
-data = [
-    {"name": "Mad Max", "action": 40, "dialogues": 20, "duration": 2.5, "violence": 9, "rating": 8.1, "genre": 1},
-    {"name": "John Wick", "action": 35, "dialogues": 25, "duration": 3.0, "violence": 8, "rating": 7.4, "genre": 1},
-    {"name": "The Godfather", "action": 10, "dialogues": 85, "duration": 6.0, "violence": 3, "rating": 9.2, "genre": 0},
-    {"name": "Forrest Gump", "action": 5, "dialogues": 91, "duration": 6.5, "violence": 1, "rating": 8.8, "genre": 0},
-    {"name": "Die Hard", "action": 38, "dialogues": 30, "duration": 3.5, "violence": 7, "rating": 7.9, "genre": 1},
-    {"name": "The Pursuit of Happiness", "action": 3, "dialogues": 94, "duration": 6.8, "violence": 1, "rating": 8.0, "genre": 0},
-]
 
-# Create DataFrame
-df = pd.DataFrame(data)
+def load_data(filename):
+    """Load data from Excel file using openpyxl"""
+    wb = load_workbook(filename)
+    ws = wb.active
 
-# Select features and label
-X = df[["action", "dialogues", "duration", "violence", "rating"]]
-y = df["genre"]
+    data = []
+    for row in ws.iter_rows(min_row=2, values_only=True):  # Skip header
+        age, tumor_size, lymph_nodes, cell_uniformity, diagnosis = row
+        data.append({
+            'features': [age, tumor_size, lymph_nodes, cell_uniformity],
+            'diagnosis': diagnosis
+        })
 
-# Initialize and train KNN model
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X, y)
+    return data
 
-# New movie data (with feature names as columns)
-new_movie_df = pd.DataFrame([[18, 60, 4.5, 4, 7.5]], columns=X.columns)
 
-# Predict genre
-prediction = model.predict(new_movie_df)
-genre = "Action" if prediction[0] == 1 else "Drama"
+def normalize_data(data):
+    """Normalize features to [0,1] range"""
+    # Initialize min and max for each feature
+    num_features = len(data[0]['features'])
+    min_vals = [float('inf')] * num_features
+    max_vals = [float('-inf')] * num_features
 
-print("📽️ Predicted Genre:", genre)
+    # Find min and max for each feature
+    for entry in data:
+        for i, val in enumerate(entry['features']):
+            if val < min_vals[i]:
+                min_vals[i] = val
+            if val > max_vals[i]:
+                max_vals[i] = val
+
+    # Normalize data
+    normalized_data = []
+    for entry in data:
+        normalized_features = []
+        for i, val in enumerate(entry['features']):
+            if max_vals[i] == min_vals[i]:  # Avoid division by zero
+                normalized = 0.0
+            else:
+                normalized = (val - min_vals[i]) / (max_vals[i] - min_vals[i])
+            normalized_features.append(normalized)
+
+        normalized_data.append({
+            'features': normalized_features,
+            'diagnosis': entry['diagnosis']
+        })
+
+    return normalized_data, (min_vals, max_vals)
+
+
+def manhattan_distance(a, b):
+    """Calculate Manhattan distance between two feature vectors"""
+    return sum(abs(x - y) for x, y in zip(a, b))
+
+
+def knn_predict(train_data, test_point, k=19):
+    """Predict class using KNN algorithm"""
+    distances = []
+    for train_point in train_data:
+        dist = manhattan_distance(train_point['features'], test_point)
+        distances.append((dist, train_point['diagnosis']))
+
+    # Sort by distance and get k nearest neighbors
+    distances.sort(key=lambda x: x[0])
+    neighbors = distances[:k]
+
+    # Count votes for each class
+    votes = [n[1] for n in neighbors]
+    vote_count = Counter(votes)
+
+    # Return the class with most votes
+    return vote_count.most_common(1)[0][0]
+
+
+def evaluate_model(train_data, test_data, k=19):
+    """Evaluate model accuracy on test data"""
+    correct = 0
+    for test_point in test_data:
+        prediction = knn_predict(train_data, test_point['features'], k)
+        if prediction == test_point['diagnosis']:
+            correct += 1
+    return correct / len(test_data)
+
+
+def main():
+    # Load and prepare data
+    data = load_data("breast_cancer_dataset.xlsx")
+    normalized_data, norm_params = normalize_data(data)
+
+    # Split data into train and test (80/20)
+    split_idx = int(0.8 * len(normalized_data))
+    train_data = normalized_data[:split_idx]
+    test_data = normalized_data[split_idx:]
+
+    # Evaluate model
+    accuracy = evaluate_model(train_data, test_data, k=19)
+    print(f"Model Accuracy: {accuracy:.2%}")
+
+    # Example prediction
+    new_point = [45, 2.5, 3, 7]  # Age, Tumor Size, Lymph Nodes, Cell Uniformity
+    # Normalize new point using same parameters
+    min_vals, max_vals = norm_params
+    new_point_normalized = [
+        (new_point[i] - min_vals[i]) / (max_vals[i] - min_vals[i])
+        for i in range(len(new_point))
+    ]
+    prediction = knn_predict(normalized_data, new_point_normalized, k=19)
+    print(f"Prediction for {new_point}: {'Malignant' if prediction == 1 else 'Benign'}")
+
+
+if __name__ == "__main__":
+    main()
